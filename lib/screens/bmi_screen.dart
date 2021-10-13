@@ -4,7 +4,7 @@ import "dart:math" as math;
 class BMI extends StatefulWidget {
   double bmi = 0.0;
   bool metric = true;
-  List<bool> __selections = List.generate(2, (_) => false);
+  List<bool> selections = [true, false];
 
   BMI({Key? key}) : super(key: key);
 
@@ -32,13 +32,16 @@ class _BMIState extends State<BMI> {
                   Padding(
                       padding: EdgeInsets.all(5.0), child: Text("Imperial")),
                 ],
-                isSelected: widget.__selections,
+                isSelected: widget.selections,
                 onPressed: (int index) {
                   setState(() {
-                    // widget.__selections[index] = !widget.__selections[index];
                     if (index == 0) {
+                      widget.selections[0] = true;
+                      widget.selections[1] = false;
                       widget.metric = true;
                     } else {
+                      widget.selections[0] = false;
+                      widget.selections[1] = true;
                       widget.metric = false;
                     }
                   });
