@@ -2,22 +2,31 @@ import "package:flutter/material.dart";
 import "dart:math" as math;
 
 class BMI extends StatefulWidget {
-  double bmi = 0.0;
-  bool metric = true;
-  List<bool> selections = [true, false];
-
-  BMI({Key? key}) : super(key: key);
+  const BMI({Key? key}) : super(key: key);
 
   @override
   State<BMI> createState() => _BMIState();
 }
 
 class _BMIState extends State<BMI> {
+  TextEditingController height = TextEditingController();
+  TextEditingController weight = TextEditingController();
+  bool isMetric = true;
+  bool isImperial = false;
+  late List<bool> _selections;
+  double bmi = 0.0;
+
+  @override
+  void initState() {
+    _selections = [isMetric, isImperial];
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
-    TextEditingController height = TextEditingController();
-    TextEditingController weight = TextEditingController();
-
+    String heightTxt = "Height in ${isImperial == true ? 'Inches' : 'meters'}";
+    String weightTxt =
+        "Weight in ${isImperial == true ? 'Pounds' : 'Kilograms'}";
     return Scaffold(
         appBar: AppBar(title: const Text("BMI Calculator")),
         body: Container(
@@ -32,18 +41,18 @@ class _BMIState extends State<BMI> {
                   Padding(
                       padding: EdgeInsets.all(5.0), child: Text("Imperial")),
                 ],
-                isSelected: widget.selections,
+                isSelected: _selections,
                 onPressed: (int index) {
+                  if (index == 0) {
+                    isMetric = true;
+                    isImperial = false;
+                  } else {
+                    isMetric = false;
+                    isImperial = true;
+                  }
+
                   setState(() {
-                    if (index == 0) {
-                      widget.selections[0] = true;
-                      widget.selections[1] = false;
-                      widget.metric = true;
-                    } else {
-                      widget.selections[0] = false;
-                      widget.selections[1] = true;
-                      widget.metric = false;
-                    }
+                    _selections = [isMetric, isImperial];
                   });
                 },
               ),
@@ -53,18 +62,14 @@ class _BMIState extends State<BMI> {
                 child: TextField(
                     controller: height,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                        label: Text(
-                            "Height in ${widget.metric == false ? 'Inches' : 'meters'}"))),
+                    decoration: InputDecoration(label: Text(heightTxt))),
               ),
               SizedBox(
                 width: 300,
                 child: TextField(
                     controller: weight,
                     keyboardType: TextInputType.number,
-                    decoration: InputDecoration(
-                        label: Text(
-                            "Weight in ${widget.metric == false ? 'Pounds' : 'Kilograms'}"))),
+                    decoration: InputDecoration(label: Text(weightTxt))),
               ),
               Container(
                 margin: const EdgeInsets.only(top: 40.0),
@@ -72,11 +77,11 @@ class _BMIState extends State<BMI> {
                     child: const Text("Calculate BMI"),
                     onPressed: () {
                       setState(() {
-                        if (widget.metric == true) {
-                          widget.bmi = num.parse(weight.text) /
+                        if (isMetric == true) {
+                          bmi = num.parse(weight.text) /
                               math.pow(num.parse(height.text), 2);
                         } else {
-                          widget.bmi = (num.parse(weight.text) /
+                          bmi = (num.parse(weight.text) /
                                   math.pow(num.parse(height.text), 2)) *
                               703;
                         }
@@ -85,7 +90,7 @@ class _BMIState extends State<BMI> {
               ),
               Container(
                   margin: const EdgeInsets.only(top: 40.0),
-                  child: Text("Your BMI is ${widget.bmi.toStringAsFixed(3)}"))
+                  child: Text("Your BMI is ${bmi.toStringAsFixed(3)}"))
             ],
           ),
         ));
